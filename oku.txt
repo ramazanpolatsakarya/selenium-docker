@@ -1,0 +1,93 @@
+
+npx @puppeteer/browsers install chromedriver@116.0.5793.0
+npx @puppeteer/browsers install chromedriver@latest
+
+
+opera için
+docker run -d -p 4443:4444 --shm-size=2g selenium/standalone-opera:3.141.59-20210607
+docker run -d -p 4443:4444 -p 5900:5900 --shm-size=2g selenium/standalone-opera-debug:3.141.59-20210607
+docker run -d -p 4443:4444 --shm-size=2g selenium/standalone-opera:3.141.59-20210422
+
+
+chrome için
+docker run -d -p 4444:4444 --shm-size=2g selenium/standalone-chrome:3.141.59-selenium
+docker run -d -p 4444:4444 --shm-size=2g selenium/standalone-chrome:3.141.59-20210607
+docker run -d -p 4444:4444 -p 5900:5900 --shm-size=2g selenium/standalone-chrome-debug:3.141.59-20210607
+docker run -d -p 4444:4444 --shm-size=2g selenium/standalone-chrome:3.141.59-20210422
+
+
+Firefox için
+docker run -d -p 4445:4444 --shm-size 2g selenium/standalone-firefox:3.141.59-selenium
+docker run -d -p 4445:4444 --shm-size 2g selenium/standalone-firefox:3.141.59-20210607
+docker run -d -p 4445:4444 -p 5901:5900 --shm-size 2g selenium/standalone-firefox-debug:3.141.59-20210607
+docker run -d -p 4445:4444 --shm-size 2g selenium/standalone-firefox:3.141.59-20210422
+
+
+Tüm tarayıcıları test etmek için
+docker network create grid
+docker run -d -p 4444:4444 --net grid --name selenium-hub selenium/hub:3.141.59-selenium
+docker run -d --net grid -e HUB_HOST=selenium-hub -v /dev/shm:/dev/shm selenium/node-chrome:3.141.59-selenium
+docker run -d --net grid -e HUB_HOST=selenium-hub -v /dev/shm:/dev/shm selenium/node-firefox:3.141.59-selenium
+
+
+
+docker run -d -p 4444:4444 --name selenium-hub selenium/hub:3.141.59-selenium
+docker run -d --link selenium-hub:hub -v /dev/shm:/dev/shm selenium/node-chrome:3.141.59-selenium
+docker run -d --link selenium-hub:hub -v /dev/shm:/dev/shm selenium/node-firefox:3.141.59-selenium
+
+
+docker run -d -e NODE_MAX_INSTANCES=3 -e NODE_MAX_SESSION=3 --link selenium-hub:hub -v /dev/shm:/dev/shm selenium/node-chrome:3.141.59-selenium
+docker run -d -e NODE_MAX_INSTANCES=3 -e NODE_MAX_SESSION=3 --link selenium-hub:hub -v /dev/shm:/dev/shm selenium/node-firefox:3.141.59-selenium
+
+
+
+
+docker run -d -p 4444:4444 -e JAVA_OPTS=-Xmx512m --name selenium-hub selenium/hub:3.141.59-selenium
+docker run -d -p 4444:4444 -e SE_OPTS="-debug" --name selenium-hub selenium/hub:3.141.59-selenium
+docker run -d -p 4444:4444 -v $(pwd):/mnt -e JAVA_CLASSPATH="/mnt/*:/opt/selenium/*:." -e SE_OPTS="-servlets com.example.your.AwesomeServlet" --name selenium-hub selenium/hub:3.141.59-selenium
+docker run -d -e HUB_HOST=<hub_ip|hub_name> -e HUB_PORT=4444 selenium/node-chrome:3.141.59-selenium
+docker run -d -e SCREEN_WIDTH=1366 -e SCREEN_HEIGHT=768 -e SCREEN_DEPTH=24 -e SCREEN_DPI=74 selenium/standalone-firefox
+
+docker run -d --net grid -e HUB_HOST=selenium-hub:hub -e NODE_MAX_INSTANCES=3 -e NODE_MAX_SESSION=3 -v /dev/shm:/dev/shm selenium/node-firefox:3.141.59-selenium
+docker run -d --net grid -e HUB_HOST=selenium-hub:hub -e NODE_MAX_INSTANCES=3 -e NODE_MAX_SESSION=3 -v /dev/shm:/dev/shm selenium/node-chrome:3.141.59-selenium
+
+docker run -d -e HUB_HOST=selenium-hub:hub -e NODE_MAX_INSTANCES=3 -e NODE_MAX_SESSION=3 selenium/node-firefox:3.141.59-selenium
+docker run -d --net grid -e HUB_HOST=selenium-hub:hub -e START_XVFB=false -v /dev/shm:/dev/shm selenium/node-chrome
+
+
+
+
+docker-compose -f docker-compose-v3.yaml up
+docker-compose -f docker-compose-v3.yaml up --scale firefox=3
+
+
+node test-chrome.js
+node test-firefox.js
+node test-opera.js
+node test-parallel.js
+
+$ docker run -d --name selenium-hub -p 4444:4444 selenium/hub:3.141.59-selenium
+$ CH=$(docker run --rm --name=ch \
+    --link selenium-hub:hub -v /e2e/uploads:/e2e/uploads \
+    -v /dev/shm:/dev/shm \
+    selenium/node-chrome:3.141.59-selenium)
+
+$ docker run -d --name selenium-hub -p 4444:4444 selenium/hub:3.141.59-selenium
+$ FF=$(docker run --rm --name=fx \
+    --link selenium-hub:hub -v /e2e/uploads:/e2e/uploads \
+    -v /dev/shm:/dev/shm \
+    selenium/node-firefox:3.141.59-selenium)
+
+
+
+
+# Remove all unused networks
+$ docker network prune
+# OR
+# Removes the grid network
+$ docker network rm grid
+
+
+
+
+

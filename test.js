@@ -1,16 +1,20 @@
 const chrome = require("selenium-webdriver/chrome");
 const { Builder, By, Key, until } = require("selenium-webdriver");
 
+
+
+
+
 (async function googleSearch() {
+  // let service = new chrome.ServiceBuilder("./chromedriver/win64-116.0.5793.0/chromedriver-win64/chromedriver.exe");
+  let service = new chrome.ServiceBuilder("./chromedriver/win64-131.0.6778.87/chromedriver-win64/chromedriver.exe");
+
   let driver = await new Builder()
     .forBrowser("chrome")
-    // .usingServer("http://localhost:4444/wd/hub/")
-    .setChromeService(
-      chrome.setDefaultService(
-        new chrome.ServiceBuilder("./drivers/chromedriver_89").build()
-      )
-    )
+    .setChromeService(service) // Hizmeti doğrudan Builder ile ayarlayın
     .build();
+
+
 
   try {
     // Navigate to Url
